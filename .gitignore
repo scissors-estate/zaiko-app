@@ -1,0 +1,11 @@
+# バックアップファイル
+*.backup_*
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# エディタ
+.vscode/
+.idea/
