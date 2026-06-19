@@ -81,7 +81,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>発注日</label>
+          <label>日付</label>
           <input type="date" id="f-date">
         </div>
         <div class="form-group">
@@ -155,7 +155,7 @@ function renderSummary() {
         <div class="stock-num">${stock}</div>
         <div class="unit">個（在庫）</div>
       </div>
-      <div class="unit" style="margin-top:4px">1箱：${item==='コットン'?'500':item==='アメニティ袋'?'1000':'250'}個</div>
+      <div class="unit" style="margin-top:4px">1箱：${item==='コットン'?'500':item==='アメニティ袋'?'1000':item==='ヘアブラシ'?'200':'250'}個</div>
     </div>`;
   }).join('');
 }
@@ -178,7 +178,7 @@ function renderTable() {
   el.innerHTML = `<table>
     <thead><tr>
       ${showItem ? '<th>品目</th>' : ''}
-      <th>発注日</th>
+      <th>日付</th>
       <th>入庫</th>
       <th>出庫</th>
       <th>区分</th>
