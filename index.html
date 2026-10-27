@@ -45,9 +45,16 @@
   .tabs { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
   .tab { padding: 6px 14px; font-size: 13px; border: 0.5px solid rgba(0,0,0,0.15); border-radius: 20px; cursor: pointer; background: #fff; color: #666; }
   .tab.active { background: #f0f0ee; color: #1a1a1a; font-weight: 500; border-color: rgba(0,0,0,0.3); }
+  /* メインタブ */
+  .main-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 0.5px solid rgba(0,0,0,0.12); }
+  .main-tab { padding: 10px 20px; font-size: 14px; cursor: pointer; background: none; border: none; color: #888; font-weight: 400; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .main-tab.active { color: #1a1a1a; font-weight: 500; border-bottom: 2px solid #1a1a1a; }
+  .main-tab-panel { display: none; }
+  .main-tab-panel.active { display: block; }
   @media (max-width: 600px) {
     .summary-grid { grid-template-columns: repeat(2, 1fr); }
     .header { flex-direction: column; align-items: flex-start; }
+    .main-tab { padding: 8px 14px; font-size: 13px; }
   }
 </style>
 </head>
@@ -62,50 +69,91 @@
   </div>
 
   <div class="summary-grid" id="summary"></div>
-    <div style="font-size:13px;padding:8px 16px;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:12px;display:inline-block;color:#2E7D32;font-weight:500;margin-bottom:1rem;">アメニティ 1袋：合計¥138</div>
-  <div class="section">
-    <div class="section-header" onclick="toggleSection('form-section')">
-      <span class="section-title">+ 入出庫を記録する</span>
-      <span class="toggle-icon" id="form-toggle">▲</span>
-    </div>
-    <div class="section-body" id="form-section">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>品目</label>
-          <select id="f-item">
-            <option value="アメニティ袋">アメニティ袋</option>
-            <option value="歯ブラシ">歯ブラシ</option>
-            <option value="カミソリ">カミソリ</option>
-            <option value="コットン">コットン</option>
-            <option value="ヘアブラシ">ヘアブラシ</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>日付</label>
-          <input type="date" id="f-date">
-        </div>
-        <div class="form-group">
-          <label>入庫数</label>
-          <input type="number" id="f-in" min="0" value="0" placeholder="0">
-        </div>
-        <div class="form-group">
-          <label>出庫数</label>
-          <input type="number" id="f-out" min="0" value="0" placeholder="0">
-        </div>
+  <div style="font-size:13px;padding:8px 16px;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:12px;display:inline-block;color:#2E7D32;font-weight:500;margin-bottom:1rem;">アメニティ 1袋：合計¥138</div>
+
+  <!-- メインタブ切り替え -->
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="switchMainTab('zaiko')">入出庫・記録一覧</button>
+    <button class="main-tab" onclick="switchMainTab('transfer')">本社 → 青戸事務所</button>
+  </div>
+
+  <!-- タブ1：入出庫・記録一覧 -->
+  <div class="main-tab-panel active" id="panel-zaiko">
+    <div class="section">
+      <div class="section-header" onclick="toggleSection('form-section')">
+        <span class="section-title">+ 入出庫を記録する</span>
+        <span class="toggle-icon" id="form-toggle">▲</span>
       </div>
-      <button class="btn-add" id="btn-add" onclick="addEntry()" disabled>更新</button>
+      <div class="section-body" id="form-section">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>品目</label>
+            <select id="f-item">
+              <option value="アメニティ袋">アメニティ袋</option>
+              <option value="歯ブラシ">歯ブラシ</option>
+              <option value="カミソリ">カミソリ</option>
+              <option value="コットン">コットン</option>
+              <option value="ヘアブラシ">ヘアブラシ</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>日付</label>
+            <input type="date" id="f-date">
+          </div>
+          <div class="form-group">
+            <label>入庫数</label>
+            <input type="number" id="f-in" min="0" value="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>出庫数</label>
+            <input type="number" id="f-out" min="0" value="0" placeholder="0">
+          </div>
+        </div>
+        <button class="btn-add" id="btn-add" onclick="addEntry()" disabled>更新</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">記録一覧</span>
+      </div>
+      <div class="section-body" style="padding: 0;">
+        <div style="padding: 12px 16px 0;">
+          <div class="tabs" id="tabs"></div>
+        </div>
+        <div id="table-area"></div>
+      </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">記録一覧</span>
-    </div>
-    <div class="section-body" style="padding: 0;">
-      <div style="padding: 12px 16px 0;">
-        <div class="tabs" id="tabs"></div>
+  <!-- タブ2：本社 → 青戸事務所 -->
+  <div class="main-tab-panel" id="panel-transfer">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">移動を記録する</span>
       </div>
-      <div id="table-area"></div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>日付</label>
+            <input type="date" id="t-date">
+          </div>
+          <div class="form-group">
+            <label>袋数　1袋 = 60個</label>
+            <input type="number" id="t-bags" min="1" value="1" placeholder="1">
+          </div>
+        </div>
+        <button class="btn-add" id="btn-transfer" onclick="addTransfer()" disabled>記録する</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">履歴</span>
+      </div>
+      <div class="section-body" style="padding: 0;">
+        <div id="transfer-table-area"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -129,9 +177,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const COLLECTION = "zaiko_entries";
+const TRANSFER_COLLECTION = "transfer_entries";
 
 const ITEMS = ["アメニティ袋","歯ブラシ","カミソリ","コットン","ヘアブラシ"];
 let entries = [];
+let transferEntries = [];
 let activeTab = "全品目";
 
 function setStatus(text, kind) {
@@ -178,7 +228,7 @@ function renderTable() {
   el.innerHTML = `<table>
     <thead><tr>
       ${showItem ? '<th>品目</th>' : ''}
-      <th>発注日</th>
+      <th>日付</th>
       <th>入庫</th>
       <th>出庫</th>
       <th>区分</th>
@@ -207,10 +257,39 @@ function renderTable() {
   });
 }
 
+function renderTransferTable() {
+  const el = document.getElementById('transfer-table-area');
+  if (!transferEntries.length) {
+    el.innerHTML = '<div class="empty">記録がありません</div>';
+    return;
+  }
+  el.innerHTML = `<table>
+    <thead><tr>
+      <th>日付</th>
+      <th>袋数</th>
+      <th></th>
+    </tr></thead>
+    <tbody>
+      ${transferEntries.map(e => {
+        return `<tr>
+          <td>${e.date || '-'}</td>
+          <td>${e.bags || 0}袋</td>
+          <td><button class="btn-del" data-id="${e.id}">✕</button></td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+
+  el.querySelectorAll('.btn-del').forEach(btn => {
+    btn.addEventListener('click', () => deleteTransfer(btn.dataset.id));
+  });
+}
+
 function render() {
   renderSummary();
   renderTabs();
   renderTable();
+  renderTransferTable();
 }
 
 async function addEntry() {
@@ -237,10 +316,41 @@ async function addEntry() {
   }
 }
 
+async function addTransfer() {
+  const date = document.getElementById('t-date').value;
+  const bags = parseInt(document.getElementById('t-bags').value) || 0;
+  if (!bags) { alert('袋数を入力してください'); return; }
+
+  const btn = document.getElementById('btn-transfer');
+  btn.disabled = true;
+  try {
+    await addDoc(collection(db, TRANSFER_COLLECTION), {
+      date, bags,
+      createdAt: serverTimestamp(),
+    });
+    document.getElementById('t-bags').value = 1;
+  } catch (e) {
+    console.error(e);
+    alert('保存に失敗しました。通信状況を確認してください。\n' + (e.message || e));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 async function deleteEntry(id) {
   if (!confirm('この記録を削除しますか？')) return;
   try {
     await deleteDoc(doc(db, COLLECTION, id));
+  } catch (e) {
+    console.error(e);
+    alert('削除に失敗しました。\n' + (e.message || e));
+  }
+}
+
+async function deleteTransfer(id) {
+  if (!confirm('この記録を削除しますか？')) return;
+  try {
+    await deleteDoc(doc(db, TRANSFER_COLLECTION, id));
   } catch (e) {
     console.error(e);
     alert('削除に失敗しました。\n' + (e.message || e));
@@ -265,22 +375,51 @@ function toggleSection(id) {
   }
 }
 
+function switchMainTab(tab) {
+  document.querySelectorAll('.main-tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.main-tab-panel').forEach(el => el.classList.remove('active'));
+  if (tab === 'zaiko') {
+    document.querySelectorAll('.main-tab')[0].classList.add('active');
+    document.getElementById('panel-zaiko').classList.add('active');
+  } else {
+    document.querySelectorAll('.main-tab')[1].classList.add('active');
+    document.getElementById('panel-transfer').classList.add('active');
+  }
+}
+
 window.addEntry = addEntry;
+window.addTransfer = addTransfer;
 window.setTab = setTab;
 window.toggleSection = toggleSection;
+window.switchMainTab = switchMainTab;
 
-document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('f-date').value = today;
+document.getElementById('t-date').value = today;
 
+// 在庫エントリの監視
 const q = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'));
 onSnapshot(q, snap => {
   entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  render();
+  renderSummary();
+  renderTabs();
+  renderTable();
   setStatus('同期中 ✓', 'ok');
   document.getElementById('btn-add').disabled = false;
 }, err => {
   console.error(err);
   setStatus('接続エラー', 'err');
   alert('データ取得に失敗しました。\nセキュリティルールが正しく設定されているか確認してください。\n\n' + (err.message || err));
+});
+
+// 移動記録の監視
+const tq = query(collection(db, TRANSFER_COLLECTION), orderBy('createdAt', 'desc'));
+onSnapshot(tq, snap => {
+  transferEntries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderTransferTable();
+  document.getElementById('btn-transfer').disabled = false;
+}, err => {
+  console.error(err);
 });
 
 render();
